@@ -1,0 +1,7 @@
+<resources>
+
+    <style name="AppTheme" parent="BaseAppTheme">
+        <!-- TODO but it changes padding       <item name="android:windowTranslucentStatus">true</item>-->
+    </style>
+
+</resources>

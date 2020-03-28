@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FFFFFF</color>
+    <color name="colorPrimaryDark">#FFFFFF</color>
+    <color name="colorAccent">@color/okay</color>
+
+    <color name="okay">#FF00A040</color>
+    <color name="not_okay">#FFDD0040</color>
+    <color name="warning">#F48236</color>
+</resources>

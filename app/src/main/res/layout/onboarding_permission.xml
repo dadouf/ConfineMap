@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="#ffffff"
+    tools:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/onboarding_permission_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:text="Où êtes-vous ?"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/onboarding_permission_success"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/ic_check_black_24dp"
+        android:drawablePadding="8dp"
+        android:text="Trouvé !"
+        android:textColor="#00A040"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/onboarding_permission_body"
+        app:layout_constraintLeft_toLeftOf="@id/onboarding_permission_body"
+        app:layout_constraintRight_toRightOf="@id/onboarding_permission_body"
+        app:layout_constraintTop_toTopOf="@id/onboarding_permission_body"
+        tools:visibility="visible" />
+
+    <ProgressBar
+        android:id="@+id/onboarding_permission_progress"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/onboarding_permission_body"
+        app:layout_constraintLeft_toLeftOf="@id/onboarding_permission_body"
+        app:layout_constraintRight_toRightOf="@id/onboarding_permission_body"
+        app:layout_constraintTop_toTopOf="@id/onboarding_permission_body"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/onboarding_permission_body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingTop="8dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="24dp"
+        android:text="Pour fonctionner, Confinemap a besoin de votre localisation.\n\nRassurez-vous : elle n'est utilisée que lorsque vous le décidez. Et aucune donnée ne quitte votre téléphone."
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:layout_constraintBottom_toTopOf="@id/onboarding_permission_warning"
+        app:layout_constraintTop_toBottomOf="@id/onboarding_permission_title" />
+
+
+    <TextView
+        android:id="@+id/onboarding_permission_warning"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="8dp"
+        android:text="Autorisation impossible. Veuillez vérifier vos paramètres ou utiliser Confinemap sans localisation."
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/warning"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/onboarding_permission_button"
+        tools:visibility="visible" />
+
+    <Button
+        android:id="@+id/onboarding_permission_button"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Autoriser"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
