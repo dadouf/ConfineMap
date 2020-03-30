@@ -326,7 +326,7 @@ V.next - SORTED
 [x] Make MainActivity single instance or whatever
 [x] Proguard
 [x] Bigger buttons
-[ ] icon with white background on Pixel 2
+[x] icon with white background on Pixel 2
 [x] ne pas recentrer sur la maison quand je reviens
 [ ] forbid start balade if not in range
 [ ] alerter when user gets out even with activity open

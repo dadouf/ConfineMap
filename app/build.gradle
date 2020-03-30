@@ -10,8 +10,8 @@ android {
         applicationId "com.davidferrand.confinemap"
         minSdkVersion 15
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -20,6 +20,17 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def pkgName = variant.applicationId
+            def buildType = variant.variantData.variantConfiguration.buildType.name
+            def versionName = variant.versionName
+            def versionCode = variant.versionCode
+
+            outputFileName = new File("${pkgName}_${buildType}_${versionName} ($versionCode).apk")
         }
     }
 
