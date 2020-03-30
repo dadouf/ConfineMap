@@ -4,7 +4,6 @@ import android.content.Intent
 import android.util.Log
 import android.view.View
 import androidx.annotation.CallSuper
-import com.davidferrand.confinemap.HomeZone.Companion.defaultZoom
 import com.davidferrand.confinemap.MapsActivity
 import com.davidferrand.confinemap.logTag
 import com.davidferrand.confinemap.withLatitudeOffset
@@ -20,6 +19,8 @@ abstract class Flow(protected val activity: MapsActivity) {
     /** Latitude offset from the real camera target */
     protected open val viewportLatitudeOffset: Double = 0.0
 
+    abstract val cameraSettings: CameraSettings
+
     protected val perceivedCameraLocation: LatLng
         get() {
             val target = activity.map.cameraPosition.target
@@ -33,7 +34,7 @@ abstract class Flow(protected val activity: MapsActivity) {
         activity.map.animateCamera(
             CameraUpdateFactory.newLatLngZoom(
                 location.withLatitudeOffset(-viewportLatitudeOffset),
-                defaultZoom
+                cameraSettings.zoom
             )
         )
     }
@@ -48,8 +49,29 @@ abstract class Flow(protected val activity: MapsActivity) {
         activity.btn_reset_home.visibility = View.GONE
         activity.btn_start.visibility = View.GONE
         activity.btn_settings.visibility = View.GONE
+
+        cameraSettings.let {
+            val location = when (it.target) {
+                CameraTarget.Home -> activity.homeZone.center
+                CameraTarget.MyLocation -> activity.myLocation
+                is CameraTarget.Custom -> it.target.location
+            }
+
+            if (location != null) {
+                val cameraUpdate = CameraUpdateFactory.newLatLngZoom(location, it.zoom)
+                if (it.animate) {
+                    activity.map.animateCamera(cameraUpdate)
+                } else {
+                    activity.map.moveCamera(cameraUpdate)
+                }
+            }
+        }
     }
 
+    /**
+     * This is called only when the Activity's onStart() is called again.
+     * It doesn't get called when the flow starts.
+     */
     open fun onResume() {}
 
     open fun onPause() {}

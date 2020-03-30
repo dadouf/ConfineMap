@@ -10,6 +10,12 @@ import kotlinx.android.synthetic.main.activity_maps.*
 class BaladeSetupFlow(activity: MapsActivity) : Flow(activity) {
     override val viewportLatitudeOffset: Double = defaultLatitudeOffset
 
+    override val cameraSettings = CameraSettings(
+        target = CameraTarget.MyLocation,
+        zoom = 14f,
+        animate = true
+    )
+
     override fun onStart() {
         super.onStart()
 
@@ -31,8 +37,6 @@ class BaladeSetupFlow(activity: MapsActivity) : Flow(activity) {
         activity.unlockMap()
 
         activity.homeZone.locked = false
-
-        animateCameraToPerceivedLocation(activity.homeZone.center)
     }
 
 

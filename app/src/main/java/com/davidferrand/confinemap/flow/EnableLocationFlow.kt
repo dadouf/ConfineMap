@@ -33,6 +33,12 @@ import kotlinx.coroutines.launch
 class EnableLocationFlow(activity: MapsActivity) : Flow(activity), CoroutineScope by MainScope() {
     override val viewportLatitudeOffset = defaultOnboardingLatitudeOffset
 
+    override val cameraSettings = CameraSettings(
+        target = CameraTarget.MyLocation, // Likely not ready yet but will be loaded asap
+        zoom = 14f,
+        animate = false
+    )
+
     private val checkLocationSettingsTask = LocationServices.getSettingsClient(activity)
         .checkLocationSettings(
             LocationSettingsRequest.Builder().addLocationRequest(locationRequest).build()

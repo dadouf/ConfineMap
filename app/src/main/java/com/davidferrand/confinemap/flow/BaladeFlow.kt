@@ -10,6 +10,12 @@ import kotlinx.android.synthetic.main.activity_maps.*
 class BaladeFlow(activity: MapsActivity) : Flow(activity) {
     override val viewportLatitudeOffset: Double = defaultLatitudeOffset
 
+    override val cameraSettings = CameraSettings(
+        target = CameraTarget.MyLocation,
+        zoom = 15f,
+        animate = true
+    )
+
     override fun onStart() {
         super.onStart()
 
@@ -34,11 +40,6 @@ class BaladeFlow(activity: MapsActivity) : Flow(activity) {
 
         activity.unlockMap()
         activity.homeZone.locked = true
-
-        animateCameraToPerceivedLocation(activity.homeZone.center)
-
-        // Debug mode: fake location: go south
-//        VolatileDataRepository.startFakeLocation()
     }
 
     override fun onResume() {
@@ -51,7 +52,6 @@ class BaladeFlow(activity: MapsActivity) : Flow(activity) {
     }
 
     override fun onStop() {
-//        VolatileDataRepository.stopFakeLocation()
         VolatileDataRepository.locationRequestLevel.postValue(VolatileDataRepository.LocationRequestLevel.FOREGROUND_ONLY)
 
         VolatileDataRepository.baladeStatus = VolatileDataRepository.BaladeStatus.AtHome

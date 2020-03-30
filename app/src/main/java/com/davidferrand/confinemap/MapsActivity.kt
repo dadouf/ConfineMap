@@ -41,7 +41,6 @@ class MapsActivity : AppCompatActivity() {
 
     lateinit var map: GoogleMap
     lateinit var homeZone: HomeZone
-//    lateinit var myLocationMarker: Circle
 
     var myLocation: LatLng? = null
         private set(value) {
@@ -50,13 +49,13 @@ class MapsActivity : AppCompatActivity() {
             field = value
 
             homeZone.trackedMemberLocation = value
-            value?.let {
-                if (myLocationWasUnknown) {
-                    currentFlow?.animateCameraToPerceivedLocation(it)
+            value?.let { myLoc ->
+                currentFlow?.let { flow ->
+                    if (myLocationWasUnknown && flow.cameraSettings.target == CameraTarget.MyLocation) {
+                        flow.animateCameraToPerceivedLocation(myLoc)
+                    }
+                    flow.onLocationUpdate(myLoc)
                 }
-                currentFlow?.onLocationUpdate(it)
-
-//                myLocationMarker.center = value
             }
 
             // Reset itself to ensure UI is correct
@@ -217,12 +216,6 @@ class MapsActivity : AppCompatActivity() {
 //        )
 
         // Debug
-        map.setOnCameraIdleListener {
-            Log.v(
-                this@MapsActivity.logTag,
-                "Camera idle at ${map.cameraPosition}"
-            )
-        }
         map.setOnMapClickListener { Log.v(this@MapsActivity.logTag, "Map clicked at $it") }
 
         // General settings
@@ -327,8 +320,8 @@ V1
 [x] Setting button - hide
 [x] Fix coroutine stuff
 
-V.next
-[ ] Git, versioning and snapshot: screenshot, screencast, release notes, version
+V.next - SORTED
+[x] Git, versioning and snapshot: screenshot, screencast, release notes, version
 [ ] Choose home flow
 [ ] Make MainActivity single instance or whatever
 [ ] Proguard
@@ -342,15 +335,14 @@ P3
 [ ]
 
 FEATURES (* for MVP)
-[ ] TIME -- use AlarmManager to schedule the alarm
-[ ] Limites par défaut (1km, 1h)
+[ ] TIMER in activity and in notif -- (maybe use AlarmManager to schedule the alarm)
+[ ] Customize limites par défaut (1km, 1h)
 [ ] Warning before debut balade si deja au dehors
 
 [ ] Maps not fully loaded
 [ ] Fabric integration
 [x] Styling (buttons, status bar)
-[ ] Welcome message
-[ ] Dev options: radius
+[x] Welcome message
 [ ] Balade timer
 [x] Hashtag and copy across the app
 [ ] Splash screen while map loads

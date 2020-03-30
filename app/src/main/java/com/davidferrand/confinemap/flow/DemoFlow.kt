@@ -6,8 +6,6 @@ import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.Button
 import com.davidferrand.confinemap.*
-import com.davidferrand.confinemap.HomeZone.Companion.defaultZoom
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -21,11 +19,11 @@ import kotlinx.coroutines.launch
 class DemoFlow(activity: MapsActivity) : Flow(activity), CoroutineScope by MainScope() {
     override val viewportLatitudeOffset = defaultOnboardingLatitudeOffset
 
+    override val cameraSettings = initialCameraSettings
+
     private var button: Button? = null
 
     private var joggerMarker: Marker? = null
-
-    private val initialCameraPosition = LatLng(47.2115571267272, -1.576287969946861) // Procé
 
     /**
      * Set the camera position before calling this.
@@ -33,13 +31,6 @@ class DemoFlow(activity: MapsActivity) : Flow(activity), CoroutineScope by MainS
      */
     override fun onStart() {
         super.onStart()
-
-        activity.map.moveCamera(
-            CameraUpdateFactory.newLatLngZoom(
-                initialCameraPosition,
-                defaultZoom
-            )
-        )
 
         if (activity.persistentData.userHasSeenDemo) {
             // Quick return: do not display anything

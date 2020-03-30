@@ -39,16 +39,6 @@ class HomeZone(context: Context, map: GoogleMap) {
             circle.strokePattern = if (value) null else unlockedPattern
         }
 
-    var pending: Boolean = false
-        set(value) {
-            field = value
-            if (value) {
-                circle.strokeWidth = 0f
-            } else {
-                circle.strokeWidth = defaultStrokeWidth
-            }
-        }
-
     var isVisible: Boolean
         get() = marker.isVisible
         set(value) {
@@ -108,9 +98,4 @@ class HomeZone(context: Context, map: GoogleMap) {
 
 
     operator fun contains(location: LatLng) = location in circle
-
-    companion object {
-        //TODO expecting this to change for a given radius
-        const val defaultZoom = 14f
-    }
 }

@@ -4,16 +4,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
-import com.davidferrand.confinemap.HomeZone.Companion.defaultZoom
 import com.davidferrand.confinemap.MapsActivity
 import com.davidferrand.confinemap.R
+import com.davidferrand.confinemap.distanceTo
 import com.davidferrand.confinemap.tintWithColorRes
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.activity_maps.*
 
 class DefineHomeFlow(activity: MapsActivity) : Flow(activity) {
-    override val viewportLatitudeOffset = defaultOnboardingLatitudeOffset
+    override val viewportLatitudeOffset = 0.0
+
+    override val cameraSettings = CameraSettings(
+        target = CameraTarget.MyLocation,
+        zoom = 16f,
+        animate = true
+    )
 
     private var button: Button? = null
     private var warning: TextView? = null
@@ -25,7 +30,6 @@ class DefineHomeFlow(activity: MapsActivity) : Flow(activity) {
         activity.persistentData.savedHomeLocation?.let { homeLocation ->
             // We have a saved home, load it and return without showing any UI
             activity.homeZone.center = homeLocation
-            activity.map.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLocation, defaultZoom))
             activity.onChooseHomeFlowFinished()
             return@onStart
         }
@@ -40,11 +44,11 @@ class DefineHomeFlow(activity: MapsActivity) : Flow(activity) {
 
         activity.unlockMap()
 
-        activity.homeZone.pending = true
-        activity.homeZone.center = perceivedCameraLocation
+        activity.homeZone.isVisible = false
+        activity.define_home_marker.visibility = View.VISIBLE
+        activity.define_home_target.visibility = View.VISIBLE
 
-        activity.map.setOnCameraMoveListener {
-            activity.homeZone.center = perceivedCameraLocation
+        activity.map.setOnCameraIdleListener {
             maybeClearWarning()
         }
 
@@ -53,7 +57,8 @@ class DefineHomeFlow(activity: MapsActivity) : Flow(activity) {
 
     private fun validateAndFinish() {
         val myLocation = activity.myLocation
-        if (myLocation != null && myLocation !in activity.homeZone && !warned) {
+        // FIXME this seems broken
+        if (myLocation != null && myLocation.distanceTo(activity.map.cameraPosition.target) > 1_000 && !warned) {
             warning?.visibility = View.VISIBLE
             button?.apply {
                 text = "J'en suis sûr"
@@ -64,14 +69,17 @@ class DefineHomeFlow(activity: MapsActivity) : Flow(activity) {
             return
         }
 
-        activity.persistentData.savedHomeLocation = activity.homeZone.center
+        val location = activity.map.cameraPosition.target
+
+        activity.homeZone.center = location
+        activity.persistentData.savedHomeLocation = location
         activity.onChooseHomeFlowFinished()
     }
 
     private fun maybeClearWarning() {
         if (warned) {
             val myLocation = activity.myLocation
-            if (myLocation != null && myLocation in activity.homeZone) {
+            if (myLocation != null && myLocation.distanceTo(activity.map.cameraPosition.target) < 1_000) {
                 warning?.visibility = View.GONE
 
                 button?.apply {
@@ -94,10 +102,13 @@ class DefineHomeFlow(activity: MapsActivity) : Flow(activity) {
         button = null
         warning = null
 
-        activity.homeZone.pending = false
+        activity.homeZone.isVisible = true
+        activity.define_home_marker.visibility = View.GONE
+        activity.define_home_target.visibility = View.GONE
+
         warned = false
 
-        activity.map.setOnCameraMoveListener(null)
+        activity.map.setOnCameraIdleListener(null)
 
         super.onStop()
     }
