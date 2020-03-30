@@ -25,18 +25,22 @@ class DemoFlow(activity: MapsActivity) : Flow(activity), CoroutineScope by MainS
 
     private var joggerMarker: Marker? = null
 
+    override fun onQuickStart(): Boolean {
+        if (activity.persistentData.userHasSeenDemo) {
+            // Quick return: do not display anything
+            activity.onDemoFlowFinished()
+            return true
+        }
+
+        return false
+    }
+
     /**
      * Set the camera position before calling this.
      * [onStart] will take care of resetting the [HomeZone].
      */
     override fun onStart() {
         super.onStart()
-
-        if (activity.persistentData.userHasSeenDemo) {
-            // Quick return: do not display anything
-            activity.onDemoFlowFinished()
-            return
-        }
 
         LayoutInflater.from(activity)
             .inflate(R.layout.onboarding_demo, activity.frame_onboarding, true)

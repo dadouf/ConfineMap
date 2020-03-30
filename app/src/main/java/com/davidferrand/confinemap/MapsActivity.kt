@@ -34,9 +34,9 @@ class MapsActivity : AppCompatActivity() {
 
     private var currentFlow: Flow? = null
         set(value) {
-            field?.onStop()
+            field?.stop()
             field = value
-            field?.onStart()
+            field?.start()
         }
 
     lateinit var map: GoogleMap
@@ -169,11 +169,11 @@ class MapsActivity : AppCompatActivity() {
             Context.BIND_AUTO_CREATE
         )
 
-        currentFlow?.onResume()
+        currentFlow?.resume()
     }
 
     override fun onStop() {
-        currentFlow?.onPause()
+        currentFlow?.pause()
 
         if (locationUpdatesService != null) {
             // Unbind from the service. This signals to the service that this activity is no longer

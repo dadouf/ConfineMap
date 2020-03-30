@@ -12,7 +12,7 @@ class BaladeFlow(activity: MapsActivity) : Flow(activity) {
 
     override val cameraSettings = CameraSettings(
         target = CameraTarget.MyLocation,
-        zoom = 15f,
+        zoom = 14.5f,
         animate = true
     )
 

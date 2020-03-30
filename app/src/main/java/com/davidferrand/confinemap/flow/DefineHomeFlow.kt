@@ -8,6 +8,7 @@ import com.davidferrand.confinemap.MapsActivity
 import com.davidferrand.confinemap.R
 import com.davidferrand.confinemap.distanceTo
 import com.davidferrand.confinemap.tintWithColorRes
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.activity_maps.*
 
@@ -25,16 +26,20 @@ class DefineHomeFlow(activity: MapsActivity) : Flow(activity) {
 
     private var warned = false
 
-    override fun onStart() {
-        super.onStart()
+    override fun onQuickStart(): Boolean {
         activity.persistentData.savedHomeLocation?.let { homeLocation ->
             // We have a saved home, load it and return without showing any UI
             activity.homeZone.center = homeLocation
+            activity.map.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLocation, 14f))
             activity.onChooseHomeFlowFinished()
-            return@onStart
+            return true
         }
 
-        activity.shouldShowMyLocationButton = true
+        return false
+    }
+
+    override fun onStart() {
+        super.onStart()
 
         LayoutInflater.from(activity)
             .inflate(R.layout.onboarding_home, activity.frame_onboarding, true)
@@ -43,6 +48,7 @@ class DefineHomeFlow(activity: MapsActivity) : Flow(activity) {
         warning = activity.findViewById(R.id.onboarding_home_warning)
 
         activity.unlockMap()
+        activity.shouldShowMyLocationButton = true
 
         activity.homeZone.isVisible = false
         activity.define_home_marker.visibility = View.VISIBLE

@@ -39,8 +39,25 @@ abstract class Flow(protected val activity: MapsActivity) {
         )
     }
 
+    fun start() {
+        if (onQuickStart()) {
+            Log.v(logTag, "flow.onQuickStart() returned true - skipping onStart()")
+            return
+        }
+
+        onStart()
+    }
+
+    fun resume() = onResume()
+    fun pause() = onPause()
+    fun stop() = onStop()
+
+    protected open fun onQuickStart(): Boolean {
+        return false
+    }
+
     @CallSuper
-    open fun onStart() {
+    protected open fun onStart() {
         Log.v(logTag, "flow.onStart()")
 
         // Hide all UI by default. Subclasses will decide what they need
@@ -72,12 +89,18 @@ abstract class Flow(protected val activity: MapsActivity) {
      * This is called only when the Activity's onStart() is called again.
      * It doesn't get called when the flow starts.
      */
-    open fun onResume() {}
-
-    open fun onPause() {}
+    @CallSuper
+    protected open fun onResume() {
+        Log.v(logTag, "flow.onResume()")
+    }
 
     @CallSuper
-    open fun onStop() {
+    protected open fun onPause() {
+        Log.v(logTag, "flow.onPause()")
+    }
+
+    @CallSuper
+    protected open fun onStop() {
         Log.v(logTag, "flow.onStop()")
     }
 
