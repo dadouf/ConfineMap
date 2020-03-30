@@ -322,23 +322,22 @@ V1
 
 V.next - SORTED
 [x] Git, versioning and snapshot: screenshot, screencast, release notes, version
-[ ] Choose home flow
-[ ] Make MainActivity single instance or whatever
-[ ] Proguard
-[ ] Bigger buttons
+[x] Choose home flow
+[x] Make MainActivity single instance or whatever
+[x] Proguard
+[x] Bigger buttons
 [ ] icon with white background on Pixel 2
-[ ] ne pas recentrer sur la maison quand je reviens
+[x] ne pas recentrer sur la maison quand je reviens
 [ ] forbid start balade if not in range
 [ ] alerter when user gets out even with activity open
+[ ] FAB for start / stop
 
-P3
-[ ]
 
-FEATURES (* for MVP)
+
+FEATURES en vrac
 [ ] TIMER in activity and in notif -- (maybe use AlarmManager to schedule the alarm)
 [ ] Customize limites par défaut (1km, 1h)
 [ ] Warning before debut balade si deja au dehors
-
 [ ] Maps not fully loaded
 [ ] Fabric integration
 [x] Styling (buttons, status bar)
