@@ -21,6 +21,7 @@ Example: the Define Home Flow in 1.0 was using a marker on the map slightly offs
 
 ## Android stuff
 
+- Google Maps SDK
 - bindService vs startService
 - Notification channels and how finicky they are (impossible to update after creation?!)
 

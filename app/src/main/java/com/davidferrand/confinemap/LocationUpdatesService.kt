@@ -21,18 +21,18 @@ package com.davidferrand.confinemap
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.location.Location
+import android.location.LocationManager
 import android.media.AudioAttributes
 import android.media.RingtoneManager
-import android.os.Binder
-import android.os.Build
-import android.os.IBinder
-import android.os.Looper
+import android.os.*
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.Observer
+import com.davidferrand.confinemap.flow.locationParcDeProce
 import com.davidferrand.confinemap.model.PersistentDataRepository
 import com.davidferrand.confinemap.model.VolatileDataRepository
 import com.davidferrand.confinemap.model.VolatileDataRepository.LocationRequestLevel.FOREGROUND_BACKGROUND
@@ -42,9 +42,12 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.*
 import kotlin.math.roundToInt
+import kotlin.random.Random
 
-class LocationUpdatesService : LifecycleService() {
+class LocationUpdatesService : LifecycleService(),
+    CoroutineScope by CoroutineScope(Dispatchers.Default + SupervisorJob()) {
 
     private val binder: IBinder = LocalBinder()
 
@@ -225,6 +228,58 @@ class LocationUpdatesService : LifecycleService() {
         stopSelf()
     }
 
+    private var isMockingLocation = false
+
+    fun toggleMockingLocation(): Boolean {
+        if (!isMockingLocation) {
+            startMockingLocation()
+        } else {
+            stopMockingLocation()
+        }
+
+        isMockingLocation = !isMockingLocation
+        return isMockingLocation
+    }
+
+    /**
+     * Debug tool. Pre-requisites:
+     * - Manifest must declare android.permission.ACCESS_MOCK_LOCATION
+     * - In phone settings > Developer Tools > Select mock location app, select Confinemap
+     */
+    private fun startMockingLocation() {
+        fusedLocationClient.setMockMode(true)
+
+        val initialLocation = VolatileDataRepository.myLocation.value ?: locationParcDeProce
+
+        launch {
+            while (true) {
+                // TODO simulate movement
+                val mockLocation = Location(LocationManager.GPS_PROVIDER).apply {
+                    latitude = initialLocation.latitude + (Random.nextFloat() - 0.5f) / 50
+                    longitude = initialLocation.longitude + (Random.nextFloat() - 0.5f) / 50
+                    altitude = 0.0
+                    accuracy = (5..200).random().toFloat()
+                    time = System.currentTimeMillis()
+
+                    // Important: without this, the location is ignored
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                        elapsedRealtimeNanos = SystemClock.elapsedRealtimeNanos()
+                    }
+                }
+
+                Log.d(this@LocationUpdatesService.logTag, "Setting mock location: $mockLocation")
+                fusedLocationClient.setMockLocation(mockLocation)
+
+                delay(3_000)
+            }
+        }
+    }
+
+    private fun stopMockingLocation() {
+        fusedLocationClient.setMockMode(false)
+        coroutineContext.cancelChildren()
+    }
+
     /**
      * @return The main notification and whether we should also build an alert
      */
@@ -279,7 +334,6 @@ class LocationUpdatesService : LifecycleService() {
     }
 
     private fun createPendingIntentToActivity(): PendingIntent {
-        // TODO study flags to reopen the same one
         return PendingIntent.getActivity(
             this, 0, Intent(this, MapsActivity::class.java), 0
         )
@@ -325,6 +379,7 @@ class LocationUpdatesService : LifecycleService() {
 
     override fun onDestroy() {
         Log.v(logTag, "onDestroy")
+        coroutineContext.cancelChildren()
         super.onDestroy()
     }
 

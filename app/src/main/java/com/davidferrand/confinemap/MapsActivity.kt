@@ -157,6 +157,8 @@ class MapsActivity : AppCompatActivity() {
         baladeFlow = BaladeFlow(this)
 
         persistentData = PersistentDataRepository(this)
+
+        BuildVariantSpecific.onCreateActivity(this)
     }
 
     override fun onStart() {
