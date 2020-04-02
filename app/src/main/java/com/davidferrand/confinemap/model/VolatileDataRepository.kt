@@ -43,7 +43,7 @@ object VolatileDataRepository {
      */
     val locationRequest: LocationRequest = LocationRequest.create().apply {
         interval = 10_000
-        fastestInterval = 5_000
+        fastestInterval = 1_000
         priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
 

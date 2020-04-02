@@ -44,7 +44,6 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.*
 import kotlin.math.roundToInt
-import kotlin.random.Random
 
 class LocationUpdatesService : LifecycleService(),
     CoroutineScope by CoroutineScope(Dispatchers.Default + SupervisorJob()) {
@@ -247,35 +246,84 @@ class LocationUpdatesService : LifecycleService(),
      * - In phone settings > Developer Tools > Select mock location app, select Confinemap
      */
     private fun startMockingLocation() {
+        Log.d(this@LocationUpdatesService.logTag, "[Mock location] START")
+
         fusedLocationClient.setMockMode(true)
 
         val initialLocation = VolatileDataRepository.myLocation.value ?: locationParcDeProce
 
         launch {
+            // Fake movement has 3 repeated phases:
             while (true) {
-                // TODO simulate movement
-                val mockLocation = Location(LocationManager.GPS_PROVIDER).apply {
-                    latitude = initialLocation.latitude + (Random.nextFloat() - 0.5f) / 50
-                    longitude = initialLocation.longitude + (Random.nextFloat() - 0.5f) / 50
-                    altitude = 0.0
-                    accuracy = (5..200).random().toFloat()
-                    time = System.currentTimeMillis()
+                val phaseDurationSeconds = 15
 
-                    // Important: without this, the location is ignored
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                        elapsedRealtimeNanos = SystemClock.elapsedRealtimeNanos()
-                    }
+                val maxLatitudeOffset = 0.01
+                val maxLongitudeOffset = 0.01
+                val latitudeStep = maxLatitudeOffset / 15
+                val longitudeStep = maxLongitudeOffset / 15
+
+                // Phase 1: Go north-west for 15s and get out of the zone
+                for (i in 1..phaseDurationSeconds) {
+                    setMockLocation(
+                        label = "Phase1-${i}/${phaseDurationSeconds}",
+                        initialLocation = initialLocation,
+                        latOffset = i * latitudeStep,
+                        lngOffset = -i * longitudeStep / 2
+                    )
+                    delay(1_000)
                 }
 
-                Log.d(this@LocationUpdatesService.logTag, "Setting mock location: $mockLocation")
-                fusedLocationClient.setMockLocation(mockLocation)
+                // Phase 2: Go east for 15s staying out of the zone
+                for (i in 1..phaseDurationSeconds) {
+                    setMockLocation(
+                        label = "Phase2-${i}/${phaseDurationSeconds}",
+                        initialLocation = initialLocation,
+                        latOffset = maxLatitudeOffset,
+                        lngOffset = -maxLongitudeOffset / 2 + i * longitudeStep
+                    )
+                    delay(1_000)
+                }
 
-                delay(3_000)
+                // Phase 3: Go south-west back to origin in 15s
+                for (i in 1..phaseDurationSeconds) {
+                    setMockLocation(
+                        label = "Phase3-${i}/${phaseDurationSeconds}",
+                        initialLocation = initialLocation,
+                        latOffset = maxLatitudeOffset - i * latitudeStep,
+                        lngOffset = maxLongitudeOffset / 2 - i * longitudeStep / 2
+                    )
+                    delay(1_000)
+                }
             }
         }
     }
 
+    private fun setMockLocation(
+        label: String,
+        initialLocation: LatLng,
+        latOffset: Double,
+        lngOffset: Double
+    ) {
+        val mockLocation = Location(LocationManager.GPS_PROVIDER).apply {
+            latitude = initialLocation.latitude + latOffset
+            longitude = initialLocation.longitude + lngOffset
+            altitude = 0.0
+            accuracy = (5..200).random().toFloat()
+            time = System.currentTimeMillis()
+
+            // Important: without this, the location is ignored
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                elapsedRealtimeNanos = SystemClock.elapsedRealtimeNanos()
+            }
+        }
+
+        Log.d(this@LocationUpdatesService.logTag, "[Mock location] Setting $label: $mockLocation")
+        fusedLocationClient.setMockLocation(mockLocation)
+    }
+
     private fun stopMockingLocation() {
+        Log.d(this@LocationUpdatesService.logTag, "[Mock location] STOP")
+
         fusedLocationClient.setMockMode(false)
         coroutineContext.cancelChildren()
     }
@@ -379,7 +427,9 @@ class LocationUpdatesService : LifecycleService(),
 
     override fun onDestroy() {
         Log.v(logTag, "onDestroy")
-        coroutineContext.cancelChildren()
+
+        stopMockingLocation()
+
         super.onDestroy()
     }
 

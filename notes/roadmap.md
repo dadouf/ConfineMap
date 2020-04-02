@@ -40,12 +40,13 @@ v1.1
 
 v.next - SORTED
 
-- [ ] Bug: airplane mode but with location, I should still be able to use my loc but it doesn't let me. Also, when Airplane mode is turned off I should be recovering
 - [x] debug tool: fake gps location from within the app. Lesson learnt: most SO posts are about mocking using LocationManager, but we use Google Play Services Location. It's actually different
+- [ ] Bug: notification that you get out doesn't play in silent mode (logical). Replace with an actual sound and/or offer option
+- [ ] Add a sound/notification when you get back in
+- [ ] Bug: airplane mode but with location, I should still be able to use my loc but it doesn't let me. Also, when Airplane mode is turned off I should be recovering
 - [ ] forbid start balade if not in range
 - [ ] alerter when user gets out even with activity open
 - [ ] FAB for start / stop
-- [ ] Sound/notification when you get back in
 - [ ] Instant Apps
 - [ ] TIMER in activity and in notif -- (maybe use AlarmManager to schedule the alarm)
 - [ ] Customize limites par défaut (1km, 1h)
@@ -59,4 +60,5 @@ v.next - SORTED
 - [ ] Back button in onboarding
 - [ ] Traduction
 - [ ] Bug: blue dot not shown if services granted after denial (separately)
-
+- [ ] WearOS
+- [ ] Flutter/iOS version
