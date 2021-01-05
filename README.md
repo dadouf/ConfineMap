@@ -1,6 +1,6 @@
 ## Confinemap
 
-In times of confinement, Confinemap helps you go outdoors with peace of mind. If you get out of a reasonable perimeter, Confinemap will alert you. A quick stroll and then #StayHome!
+In times of lockdown, Confinemap helps you go outdoors with peace of mind. If you get out of a reasonable perimeter, Confinemap will alert you. A quick stroll and then #StayHome!
 
 | | | |
 |-|-|-|
